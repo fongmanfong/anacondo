@@ -3,7 +3,7 @@ import setuptools
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
-NAME = "monopyly"
+NAME = "anacondo"
 AUTHOR_NAME, AUTHOR_EMAIL = "fongmanfong", "fongmanfong@gmail.com"
 VERSION = "0.0.1"
 DESCRIPTION = "Real estate investment analysis including financial analysis, risk and marginal simulations."
@@ -16,7 +16,7 @@ setuptools.setup(
     description=DESCRIPTION,
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/fongmanfong/monopyly",
+    url="https://github.com/fongmanfong/anacondo",
     packages=setuptools.find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",

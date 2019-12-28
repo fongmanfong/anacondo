@@ -1,0 +1,8 @@
+README.md
+setup.py
+anacondo/__init__.py
+anacondo/monopyly.py
+anacondo.egg-info/PKG-INFO
+anacondo.egg-info/SOURCES.txt
+anacondo.egg-info/dependency_links.txt
+anacondo.egg-info/top_level.txt

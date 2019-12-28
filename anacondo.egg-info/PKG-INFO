@@ -1,8 +1,8 @@
 Metadata-Version: 2.1
-Name: monopyly
+Name: anacondo
 Version: 0.0.1
 Summary: Real estate investment analysis including financial analysis, risk and marginal simulations.
-Home-page: https://github.com/fongmanfong/monopyly
+Home-page: https://github.com/fongmanfong/anacondo
 Author: fongmanfong
 Author-email: fongmanfong@gmail.com
 License: UNKNOWN
