@@ -1,2 +1,1 @@
-# Anacondo
-A simple Python package to assess real estate investment
+This is a simple real estate investment package.
