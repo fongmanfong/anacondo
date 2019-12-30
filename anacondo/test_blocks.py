@@ -65,3 +65,4 @@ def test_return_on_investment(sample_block):
 	expected = [-0.005, 0.0514, 0.1126, 0.1789, 0.2504, 0.3271, 0.4093, 0.4970, 0.5903, 0.6895]
 	actuals = sample_block.return_on_investment()
 	assert list(actuals) == expected
+	

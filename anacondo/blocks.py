@@ -1,18 +1,17 @@
 import pandas as pd
 import numpy as np
+from mortgage import Mortgage
 
-class Blocks(object):
+class Blocks(Mortgage): # inherit mortgage
 
 	def __init__(self, property_value, purchase_price, interest_rate, down_payment_pct, loan_term, rental_income, 
 				 vacancy=0, maintenance_reserve=0, management_fee=0, monthly_property_tax=0, monthly_insurance=0,
 				 monthly_utility=0, rental_income_increase=0, property_tax_increase=0,
 				 closing_cost_buy=0, closing_cost_sell=0, years=30):
 
+		super(Blocks, self).__init__(purchase_price, interest_rate, down_payment_pct, loan_term, years)
+
 		self.property_value = property_value
-		self.purchase_price = purchase_price
-		self.interest_rate = interest_rate
-		self.down_payment_pct = down_payment_pct
-		self.loan_term = loan_term
 		self.rental_income = rental_income
 		self.vacancy = vacancy
 		self.maintenance_reserve = maintenance_reserve
@@ -24,7 +23,6 @@ class Blocks(object):
 		self.property_tax_increase = property_tax_increase
 		self.closing_cost_buy = closing_cost_buy
 		self.closing_cost_sell = closing_cost_sell
-		self.years = years
 
 		# Print formatting --> move to Print class after?
 		self.decimals = 4
@@ -41,25 +39,8 @@ class Blocks(object):
 	def _generate_years(self):
 		return range(1,self.years+1)
 
-	def _cumulative_principal(self, start, end, rate, nper, pv):
-		cp = 0
-		for i in range(start,end+1):
-			cp = cp + (-np.ppmt(rate / 12, i, nper*12, pv))
-		return cp
-
-    # General 
-
 	def down_payment_amount(self):
 		return self.purchase_price * self.down_payment_pct
-
-	def loan_amount(self):
-		return self.purchase_price * (1 - self.down_payment_pct)
-
-	def annual_payment(self):
-		return self.monthly_payments()*12
-
-	def monthly_payments(self):
-		return -np.pmt(self.interest_rate / 12.0, self.loan_term * 12, self.loan_amount())
 
 	def total_cash_required(self):
 		return self.down_payment_amount() + self.closing_cost_buy*self.loan_amount()
@@ -107,12 +88,6 @@ class Blocks(object):
 	def equity_at_purchase(self): # DOUBLE CHECK
 		return self.property_value - self.purchase_price + self.down_payment_amt
 
-	def mortgage_balance(self):
-		return np.array([round(np.fv(self.interest_rate / 12.0, i*12, self.monthly_payments(), -self.loan_amount()), 2) for i in self._generate_years()])
-
-	def principal_paydown(self):
-		return np.array([self._cumulative_principal(i*12-11, i*12, self.interest_rate, self.loan_term, self.loan_amount()) for i in self._generate_years()])
-
 	def equity_wealth(self):
 		return self.property_value - self.mortgage_balance()
 
@@ -145,7 +120,7 @@ class Blocks(object):
 		shifted_accumulate_cash_flow = np.delete(np.insert(self.accumulated_cash_flow(), 0, 0), -1)
 		return np.round((self.plus_sales_proceeds_if_final_year() + shifted_accumulate_cash_flow - self.total_cash_required()) / self.total_cash_required(), self.decimals)
 
-	# Print
+	# Print (move to seperate class)
 	
 	def print_period_sampler(self):
 		return list(range(1,11)) + [10, 20, 30]
