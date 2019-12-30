@@ -26,6 +26,9 @@ class Blocks(object):
 		self.closing_cost_sell = closing_cost_sell
 		self.years = years
 
+		# Print formatting --> move to Print class after?
+		self.decimals = 4
+
 	def _project_metric_yoy_growth(self, base, growth):
 		return np.array([self._yearly_increase(base, growth, i) for i in self._generate_years()])
 
@@ -36,7 +39,7 @@ class Blocks(object):
 		return round(12*base*(1+yoy_pct_incr/100.0) ** ((years * 12 - 12 ) / 12.0), 2)
 
 	def _generate_years(self):
-		return range(1,self.years)
+		return range(1,self.years+1)
 
 	def _cumulative_principal(self, start, end, rate, nper, pv):
 		cp = 0
@@ -114,7 +117,7 @@ class Blocks(object):
 		return self.property_value - self.mortgage_balance()
 
 	def plus_sales_proceeds_if_final_year(self):
-		return self.annual_cash_flow() + self.equity_wealth() - self.property_value*self.closing_cost_sell
+		return np.round(self.annual_cash_flow() + self.equity_wealth() - self.property_value*self.closing_cost_sell, self.decimals)
 
 	def effective_future_value(self):
 		return self.plus_sales_proceeds_if_final_year() + self.accumulated_cash_flow() + self.annual_cash_flow()
@@ -122,13 +125,13 @@ class Blocks(object):
 	# Financial Performance
 
 	def capitalization_rate(self): 
-		return self.net_operating_income() / self.property_value 
+		return np.round(self.net_operating_income() / self.property_value, self.decimals)
 
 	def cash_on_cash_return(self):
-		return np.round((self.annual_cash_flow() / self.total_cash_required())*100, 2)
+		return np.round(self.annual_cash_flow() / self.total_cash_required(), self.decimals)
 
 	def return_on_equity(self):
-		return self.effective_net_cash_flow() / self.equity_wealth()
+		return np.round(self.effective_net_cash_flow() / self.equity_wealth(), self.decimals)
 
 	def annualized_return(self):
 		annualized_return = self.effective_future_value() / self.total_cash_required()
@@ -137,8 +140,13 @@ class Blocks(object):
 		return annualized_return
 
 	def return_on_investment(self):
-		return (self.plus_sales_proceeds_if_final_year() / self.total_cash_required()) / self.total_cash_required()
 
+		# accumulated cash flow up to but no including current period
+		shifted_accumulate_cash_flow = np.delete(np.insert(self.accumulated_cash_flow(), 0, 0), -1)
+		return np.round((self.plus_sales_proceeds_if_final_year() + shifted_accumulate_cash_flow - self.total_cash_required()) / self.total_cash_required(), self.decimals)
+
+	# Print
+	
 	def print_period_sampler(self):
 		return list(range(1,11)) + [10, 20, 30]
 
