@@ -24,7 +24,8 @@ setuptools.setup(
     install_requires=[
         'numpy',
         'pandas',
-        'matplotlib'
+        'matplotlib',
+        'numpy_financial'
     ],
     classifiers=[
         "Programming Language :: Python :: 3",

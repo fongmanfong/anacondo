@@ -2,7 +2,38 @@ import pandas as pd
 import numpy as np
 from mortgage import Mortgage
 
-class Blocks(Mortgage): # inherit mortgage
+class Blocks(Mortgage):
+
+	"""
+    This class creates a Block object that represents a real estate property. This class inherits
+    from Mortgage as mortgage information is part of property assessment.
+
+    Parameters
+    -----------
+    rental_income: float
+    	Monthly rental income from property
+    vacany: TBD, optional
+    	Vacancy rate or vacancy days? TBD
+    maintenance_reserve: TBD, optional (default=0)
+    	Reserve amount paid. TBD
+    management_fee: TBD, optional
+    	Property management fee. Should this be dollar or percentage?
+    monthly_property_tax: float, optional (default=0)
+    	Monthly property tax in dollar amount
+    monthly_insurance: float, optional (default=0)
+    	Monthly insurance in dollar amount
+    monthly_utility: float, optional (default=0)
+    	Monthly utility cost in dollar amount
+    rental_income_increase: float, optional (default=0)
+    	Yearly rental income increase in percentage. Values between 0 and 1
+    property_tax_increase: float, optional (default=0)
+    	Yearly property tax increase in percetange. Values between 0 and 1
+    closing_cost_buy: float, optional (default=0)
+    	Dollar amount required upon closing property
+    closing_cost_sell; float, optional (default=0)
+    	Dollar amount required upon sellign property
+   
+    """
 
 	def __init__(self, property_value, purchase_price, interest_rate, down_payment_pct, loan_term, rental_income, 
 				 vacancy=0, maintenance_reserve=0, management_fee=0, monthly_property_tax=0, monthly_insurance=0,
@@ -35,9 +66,6 @@ class Blocks(Mortgage): # inherit mortgage
 
 	def _yearly_increase(self, base, yoy_pct_incr, years):
 		return round(12*base*(1+yoy_pct_incr/100.0) ** ((years * 12 - 12 ) / 12.0), 2)
-
-	def _generate_years(self):
-		return range(1,self.years+1)
 
 	def down_payment_amount(self):
 		return self.purchase_price * self.down_payment_pct
