@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from mortgage import Mortgage
+from .mortgage import Mortgage
 
 class Blocks(Mortgage):
 
