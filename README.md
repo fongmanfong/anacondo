@@ -4,10 +4,12 @@ _anacondo_ simplifies real estate investment analysis. Implemented in pure Pytho
 - marginal return on investment
 - breakeven scenarios
 - easy way to compare across multiple investment properties
-
+- integration with other Python real estate API [COMING SOON]
+- internal plotting capabilities
 
 ## Installation
 
 ```
 pip install anacondo
 ```
+
