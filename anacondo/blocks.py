@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import json
 from .mortgage import Mortgage
 
 class Blocks(Mortgage):
@@ -34,6 +35,10 @@ class Blocks(Mortgage):
     	Dollar amount required upon sellign property
    
     """
+
+
+# don't need property_value. put in property value growth?
+# plotting is quite useless since its mostly linear. Just print table is important
 
 	def __init__(self, property_value, purchase_price, interest_rate, down_payment_pct, loan_term, rental_income, 
 				 vacancy=0, maintenance_reserve=0, management_fee=0, monthly_property_tax=0, monthly_insurance=0,
@@ -149,7 +154,6 @@ class Blocks(Mortgage):
 		return np.round((self.plus_sales_proceeds_if_final_year() + shifted_accumulate_cash_flow - self.total_cash_required()) / self.total_cash_required(), self.decimals)
 
 	# Print (move to seperate class)
-	
 	def print_period_sampler(self):
 		return list(range(1,11)) + [10, 20, 30]
 
@@ -163,5 +167,49 @@ class Blocks(Mortgage):
 		})
 
 		return financial_performance_df.set_index('Year').T
+
+	def simulate_break_even(self, financial_metric, parameter, default_increments=True, start=1, end=None):
+
+		financial_metric_select = {
+			'coc': self.cash_on_cash_return,
+			'roe': self.return_on_equity,
+			'roi': self.return_on_investment,
+			'apy': self.annualized_return
+		}
+
+		parameter_select = {
+			'purchase_price': self.purchase_price,
+			'interest_rate': self.interest_rate
+		}
+
+		try:
+			financial_function = financial_metric_select[financial_metric]
+			original_parameter_value = parameter_select[parameter]
+		except:
+			print ('input value incorrect')
+
+		year_counter = self.years
+		price_dict = {}
+
+		while year_counter !=0:
+			self.update(**{parameter: start})
+			if np.sum(financial_function() > 0) < year_counter:
+				price_dict[start] = abs(year_counter - self.years)
+				year_counter -= 1
+			start += 1000
+
+		parameter_select[parameter] = original_parameter_value
+		return price_dict
+
+	def update(self, **kwargs):
+		self.__dict__.update((k, kwargs[k]) for k in set(kwargs).intersection(self.__dict__))
+
+	def save(self, property_name):
+
+		self_param_dict = self.__dict__.copy()
+		del self_param_dict['decimals'], self_param_dict['years']
+
+		with open('anacondo/history.json', 'w') as outfile:
+			json.dump({property_name: self_param_dict}, outfile)
 
 	# have the ability to print financial statement?

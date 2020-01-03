@@ -4,16 +4,16 @@ from distutils.core import setup
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
-setup(name='anacondo', version='0.1.0')
+setup(name='anacondo_test', version='0.0.2')
 
-NAME = "anacondo"
+NAME = "anacondo_test"
 AUTHOR_NAME, AUTHOR_EMAIL = "fongmanfong", "fongmanfong@gmail.com"
 VERSION = "0.0.1"
 DESCRIPTION = "Real estate investment analysis including financial analysis, risk and marginal simulations."
 
 setuptools.setup(
     name=NAME,
-    version="0.0.1",
+    version="0.0.2",
     author=AUTHOR_NAME,
     author_email=AUTHOR_EMAIL,
     description=DESCRIPTION,

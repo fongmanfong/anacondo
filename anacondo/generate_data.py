@@ -1,4 +1,4 @@
-from blocks import Blocks
+from .blocks import Blocks
 
 # initiate variable values
 property_value = 650000
