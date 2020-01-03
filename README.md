@@ -21,7 +21,7 @@ pip install anacondo
 
 ## Getting Started
 
-_anacondo_ is very straightforward. The `Block` class represents one property unit and contains all information related to it as well as financial metrics. This provides a simple and intuitive way to assess and compare across multiple properties.
+_anacondo_ is very straightforward and designed for novice to intermediate Python users. The `Block` class represents one property unit and contains all information related to it as well as financial metrics. This provides a simple and intuitive way to assess and compare across multiple properties.
 
 ```
 from anacondo.blocks import Blocks
@@ -34,5 +34,7 @@ property_1.mortgage_balance_summary()
 property_2.cash_on_cash_return()
 
 ```
+
+See more detail in [documentations](/docs/Quickstart.md)
 
 
