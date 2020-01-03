@@ -1,56 +1,22 @@
 from .context import anacondo
-# from sample_data.sample_block import sample_block
+import json
 import numpy as np
 import pytest
+import os
+import sys
 
+def generate_sample_block():
+	with open(os.path.join(sys.path[0], 'test/sample_data.json'), "r") as json_file:
+		data = json.load(json_file)
 
-# @pytest.fixture
-# def sample_block():
-# 	return sample_block()
-
-# initiate variable values
-property_value = 650000
-purchase_price = 650000
-interest_rate = 0.031
-down_payment_pct = 0.25 
-loan_term = 30
-rental_income = 2700
-vacancy=0
-maintenance_reserve=0 
-management_fee=0.15 
-monthly_property_tax=167.0 
-monthly_insurance=50.0
-monthly_utility=90 
-rental_income_increase=2 
-property_tax_increase=2
-closing_cost_buy=0.02
-closing_cost_sell=0
-years = 10
+	return anacondo.Blocks(**data['fake_test'])
 
 @pytest.fixture
 def sample_block():
-	return anacondo.Blocks(
-	    property_value = property_value, 
-	    purchase_price = purchase_price,
-	    interest_rate = interest_rate, 
-	    down_payment_pct = down_payment_pct, 
-	    loan_term = loan_term,
-	    rental_income = rental_income,
-	    vacancy=vacancy, 
-	    maintenance_reserve=maintenance_reserve, 
-	    management_fee=management_fee, 
-	    monthly_property_tax=monthly_property_tax, 
-	    monthly_insurance=monthly_insurance,
-	    monthly_utility=monthly_utility, 
-	    rental_income_increase=rental_income_increase, 
-	    property_tax_increase=property_tax_increase,
-	    closing_cost_buy=closing_cost_buy, 
-	    closing_cost_sell=closing_cost_sell,
-	    years=10
-	)
+	return generate_sample_block()
 
 def test_generate_years(sample_block):
-	assert range(1,years+1) == sample_block._generate_years()
+	assert range(1,11) == sample_block._generate_years()
 
 def test_capitalization_rate(sample_block):
 	expected = [0.0367, 0.0375, 0.0383, 0.0391, 0.0399, 0.0408, 0.0417, 0.0425, 0.0434, 0.0444]

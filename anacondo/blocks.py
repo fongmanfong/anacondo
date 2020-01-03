@@ -168,7 +168,8 @@ class Blocks(Mortgage):
 
 		return financial_performance_df.set_index('Year').T
 
-	def simulate_break_even(self, financial_metric, parameter, default_increments=True, start=1, end=None):
+	# use Decimal instead?
+	def simulate_break_even(self, financial_metric, parameter):
 
 		financial_metric_select = {
 			'coc': self.cash_on_cash_return,
@@ -182,34 +183,46 @@ class Blocks(Mortgage):
 			'interest_rate': self.interest_rate
 		}
 
+		default_increments_select = {
+			'purchase_price': 1000,
+			'interest_rate': 0.002
+		}
+
+		default_start_select = {
+			'purchase_price': 100000,
+			'interest_rate': 0.01
+		}
+
 		try:
 			financial_function = financial_metric_select[financial_metric]
+			increments = default_increments_select[parameter]
+			start = default_start_select[parameter]
 			original_parameter_value = parameter_select[parameter]
 		except:
 			print ('input value incorrect')
 
 		year_counter = self.years
-		price_dict = {}
+		break_even_dict = {} # stores break_even_value: year
 
 		while year_counter !=0:
 			self.update(**{parameter: start})
 			if np.sum(financial_function() > 0) < year_counter:
-				price_dict[start] = abs(year_counter - self.years)
+				break_even_dict[np.round(start, self.decimals)] = abs(year_counter - self.years) + 1
 				year_counter -= 1
-			start += 1000
+			start += increments
 
-		parameter_select[parameter] = original_parameter_value
-		return price_dict
+		self.update(**{parameter: original_parameter_value})
+		return break_even_dict
 
 	def update(self, **kwargs):
 		self.__dict__.update((k, kwargs[k]) for k in set(kwargs).intersection(self.__dict__))
 
-	def save(self, property_name):
-
-		self_param_dict = self.__dict__.copy()
-		del self_param_dict['decimals'], self_param_dict['years']
-
-		with open('anacondo/history.json', 'w') as outfile:
-			json.dump({property_name: self_param_dict}, outfile)
+	#def save(self, property_name):
+#
+	#	self_param_dict = self.__dict__.copy()
+	#	del self_param_dict['decimals'], self_param_dict['years']
+#
+	#	with open('anacondo/history.json', 'w') as outfile:
+	#		json.dump({property_name: self_param_dict}, outfile)
 
 	# have the ability to print financial statement?
