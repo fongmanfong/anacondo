@@ -25,7 +25,8 @@ setuptools.setup(
         'numpy',
         'pandas',
         'matplotlib',
-        'numpy_financial'
+        'numpy_financial',
+        'scikit-learn'
     ],
     classifiers=[
         "Programming Language :: Python :: 3",
