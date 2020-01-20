@@ -69,7 +69,8 @@ class Blocks(Mortgage):
 	def _project_metric_constant(self, metric, period):
 		return np.full(max(self._generate_years()), metric*period)
 
-	def _yearly_increase(self, base, yoy_pct_incr, years):
+	@staticmethod
+	def _yearly_increase(base, yoy_pct_incr, years):
 		return round(12*base*(1+yoy_pct_incr/100.0) ** ((years * 12 - 12 ) / 12.0), 2)
 
 	def down_payment_amount(self):
@@ -159,64 +160,17 @@ class Blocks(Mortgage):
 
 	def print_financial_performance(self, full_period=False):
 		financial_performance_df = pd.DataFrame({
-			'Year': [i for i in self._generate_years()],
-			'Cash on Cash COC': self.cash_on_cash_return(),
-			'Return on Equity ROE': self.return_on_equity(),
-			'Annualized Return APY': self.annualized_return(),
-			'Return On Investment': self.return_on_investment()
+			'Year': np.round([i for i in self._generate_years()], 4),
+			'Cash on Cash COC': np.round(self.cash_on_cash_return(), 4),
+			'Return on Equity ROE': np.round(self.return_on_equity(), 4),
+			'Annualized Return APY': np.round(self.annualized_return(), 4),
+			'Return On Investment': np.round(self.return_on_investment(), 4)
 		})
 
 		return financial_performance_df.set_index('Year').T
 
-	# use Decimal instead?
-	def simulate_break_even(self, financial_metric, parameter):
-
-		financial_metric_select = {
-			'coc': self.cash_on_cash_return,
-			'roe': self.return_on_equity,
-			'roi': self.return_on_investment,
-			'apy': self.annualized_return
-		}
-
-		parameter_select = {
-			'purchase_price': self.purchase_price,
-			'interest_rate': self.interest_rate
-		}
-
-		default_increments_select = {
-			'purchase_price': 1000,
-			'interest_rate': 0.002
-		}
-
-		default_start_select = {
-			'purchase_price': 100000,
-			'interest_rate': 0.01
-		}
-
-		try:
-			financial_function = financial_metric_select[financial_metric]
-			increments = default_increments_select[parameter]
-			start = default_start_select[parameter]
-			original_parameter_value = parameter_select[parameter]
-		except:
-			print ('input value incorrect')
-
-		year_counter = self.years
-		break_even_dict = {} # stores break_even_value: year
-
-		while year_counter !=0:
-			self.update(**{parameter: start})
-			if np.sum(financial_function() > 0) < year_counter:
-				break_even_dict[np.round(start, self.decimals)] = abs(year_counter - self.years) + 1
-				year_counter -= 1
-			start += increments
-
-		self.update(**{parameter: original_parameter_value})
-		return break_even_dict
-
 	def update(self, **kwargs):
 		self.__dict__.update((k, kwargs[k]) for k in set(kwargs).intersection(self.__dict__))
-
 	#def save(self, property_name):
 #
 	#	self_param_dict = self.__dict__.copy()
