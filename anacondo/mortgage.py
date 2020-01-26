@@ -28,6 +28,7 @@ class Mortgage(object):
 		self.loan_term = loan_term
 		self.purchase_price = purchase_price
 		self.years=years
+		self.downpayment_amt = purchase_price*down_payment_pct # 
 
 	def _generate_years(self):
 		return range(1,self.years+1)
@@ -45,10 +46,10 @@ class Mortgage(object):
 		return np.array([func(i*12-11, i*12, self.interest_rate, self.loan_term, self.loan_amount()) for i in self._generate_years()])
 
 
-	def cumulative_principal(self, start, end, rate, nper, pv):
+	def _cumulative_principal(self, start, end, rate, nper, pv):
 		return self._cumulative_principal_or_interest(start, end, rate, nper, pv, npf.ppmt)
 
-	def cumulative_interest(self, start, end, rate, nper, pv):
+	def _cumulative_interest(self, start, end, rate, nper, pv):
 		return self._cumulative_principal_or_interest(start, end, rate, nper, pv, npf.ipmt)
 
 	def loan_amount(self):
@@ -60,6 +61,15 @@ class Mortgage(object):
 	def annual_payment(self):
 		return self.monthly_payments()*12
 
+	def mortgage_balance(self):
+		return np.array([round(npf.fv(self.interest_rate / 12.0, i*12, self.monthly_payments(), -self.loan_amount()), 2) for i in self._generate_years()])
+
+	def principal_paydown(self):
+		return self._paydown(self._cumulative_principal)
+
+	def interest_paydown(self):
+		return self._paydown(self._cumulative_interest)
+
 	def mortgage_balance_summary(self):
 		return pd.DataFrame({
 			'Year': [i for i in self._generate_years()],
@@ -69,11 +79,3 @@ class Mortgage(object):
 			'Interest Paydown': np.round(self.interest_paydown(), 2)
 		})
 
-	def mortgage_balance(self):
-		return np.array([round(npf.fv(self.interest_rate / 12.0, i*12, self.monthly_payments(), -self.loan_amount()), 2) for i in self._generate_years()])
-
-	def principal_paydown(self):
-		return self._paydown(self.cumulative_principal)
-
-	def interest_paydown(self):
-		return self._paydown(self.cumulative_interest)
