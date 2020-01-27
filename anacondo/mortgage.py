@@ -28,7 +28,6 @@ class Mortgage(object):
 		self.loan_term = loan_term
 		self.purchase_price = purchase_price
 		self.years=years
-		self.downpayment_amt = purchase_price*down_payment_pct # 
 
 	def _generate_years(self):
 		return range(1,self.years+1)

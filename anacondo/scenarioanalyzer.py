@@ -1,10 +1,21 @@
 from sklearn.model_selection import ParameterGrid
 from .blocks import Blocks
+from .utils import parameter_grid_cleaner
 import numpy as np
 from copy import deepcopy
 
 class ScenarioAnalyzer(object):
-    
+   
+    """
+    This class creates a ScenarioAnalyzer object that allows different scenarios to be simulated for a block object
+
+
+    Parameters
+    -----------
+    block_object: block
+        The block object (real estate property) that is of interest   
+    """
+
     def __init__(self, block_object):
             self.block = block_object
             self.cash_on_cash_return = block_object.cash_on_cash_return
@@ -31,7 +42,7 @@ class ScenarioAnalyzer(object):
     	try:
     		return financial_metric_select[metric]
     	except:
-    		print ('input value incorrect')
+    		print ('Valid financial metric parameters: coc, roe, roi, apy')
 
     @staticmethod
     def _parameter_grid(param_grid):
@@ -41,11 +52,11 @@ class ScenarioAnalyzer(object):
     def _calculate_break_even_year(time_series):
         return len(time_series) - sum(time_series >= 0)
 
-    def compute_financial_metric_break_even(self, param_grid, increment_param_grid=None):
+    def compute_break_even(self, param_grid, increment_param_grid=None):
         
         # check param grid fits what design [min max value]
         # check if param grid values are correct
-
+        param_grid = parameter_grid_cleaner(self.block, param_grid)
         param_grid_exploded = {}
         param_results = []
         sim_block_unit = deepcopy(self.block)
@@ -67,7 +78,9 @@ class ScenarioAnalyzer(object):
 
         return param_results
 
-    def compute_scenarios(self, metric, param_grid):
+    def compute_scenarios_set(self, metric, param_grid):
+
+        param_grid = parameter_grid_cleaner(self.block, param_grid)
         param_results = []
         sim_block_unit = deepcopy(self.block)
         
@@ -78,25 +91,30 @@ class ScenarioAnalyzer(object):
         
         return param_results
 
-    def financial_return_proba(self, metric, param_grid, year=5):
+    def compute_scenarios_mc(self, metric, param_grid, year=5, sample_size=300):
+
+        # Compute return of different scenarios using monte carlo simulation. Each parameter is a vector of samples from a assumed distribution
+        # Vectors must be equal length e.g. 'interest_rate': np.random.normal(loc=0.035, scale=0.005, size=100)
 
         # check to make sure length of simulation are all the same
+        param_grid = parameter_grid_cleaner(self.block, param_grid)
 
-        param_grid_realized = {}
+        sampled_param_grid = {}
         metric_return = []
         sim_block_unit = deepcopy(self.block)
 
-        for i in range(0, 100):
+        for i in range(0, sample_size):
             for key, value in param_grid.items():
-                param_grid_realized[key] = value[i]
+                sampled_param_grid[key] = value[i] # sample from distribution and create new parameter grid
 
-            sim_block_unit.__dict__.update(param_grid_realized)
+            sim_block_unit.__dict__.update(sampled_param_grid)
             metric_return.append(self.financial_metric_selector(sim_block_unit, metric)())
 
         if year >= 0:
             return np.vstack(metric_return)[:, year]
         else:
-            pass
+            # implement after
+            pass 
 
 
 
